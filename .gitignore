@@ -1,0 +1,13 @@
+*.py[cod]
+*.suo
+*.pyproj
+*.sln
+*.orig
+*.ipynb
+.vscode/
+.ipynb_checkpoints/
+__pycache__/
+tmp/
+*egg*
+sketches/
+build/
