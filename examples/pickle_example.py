@@ -1,8 +1,6 @@
 from pickablelambda import make_lambda_pickable, LambdaProxy
 import pickle
 
-make_lambda_pickable()
-
 L = lambda x: x+1
 
 print("L(10)=" + str(L(10)))

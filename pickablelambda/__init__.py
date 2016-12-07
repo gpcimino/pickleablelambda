@@ -53,4 +53,6 @@ class LambdaProxy():
             self._lambda = LambdaProxy.str2lambda(self._lambda_code)
         return self._lambda
 
+make_lambda_pickable()
+
 

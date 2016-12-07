@@ -2,7 +2,7 @@ import unittest
 import pickle
 import types
 
-from pickablelambda import make_lambda_pickable, LambdaProxy
+from pickablelambda import LambdaProxy
 
 class TestLambdaProxy(unittest.TestCase):
 
@@ -13,7 +13,6 @@ class TestLambdaProxy(unittest.TestCase):
 
 
     def test_pickle_with_lamdba_proxy(self):
-        make_lambda_pickable()
         lmb = lambda x: x+1
         pickle_bin = pickle.dumps(LambdaProxy(lmb))
         lmb2 = pickle.loads(pickle_bin)
@@ -22,20 +21,17 @@ class TestLambdaProxy(unittest.TestCase):
 
 
     def test_use_lambda_proxy(self):
-        make_lambda_pickable()
         lmb = lambda x: x+1
         proxy = LambdaProxy(lmb)
         self.assertEqual(lmb(100), proxy(100))
 
 
     def test_use_lambda_proxy_2_args(self):
-        make_lambda_pickable()
         lmb = lambda x, y: x+y
         proxy = LambdaProxy(lmb)
         self.assertEqual(lmb(100, 200), proxy(100, 200))
 
     def test_use_lambda_second_order_equation(self):
-        make_lambda_pickable()
         lmb = lambda x: 5*x**2 + 3*x + 4
         proxy = LambdaProxy(lmb)
         self.assertEqual(lmb(2), proxy(2)) #y=30
