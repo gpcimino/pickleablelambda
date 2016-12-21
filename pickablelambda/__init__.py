@@ -15,6 +15,12 @@ def unpickle_lambda(pickled_code):
 def make_lambda_pickable():
     copyreg.pickle(LambdaProxy, pickle_lambda_proxy)
 
+def is_lambda_function(obj):
+    return isinstance(obj, types.LambdaType) and obj.__name__ == "<lambda>"
+
+def pickable(lambda_):
+    return LambdaProxy(lambda_) if is_lambda_function(lambda_) else lambda_
+
 
 class LambdaProxy():
     def __init__(self, lambda_):
