@@ -1,22 +1,28 @@
-import unittest
+# pylint: disable=missing-docstring, invalid-name
+
+from functools import partial
 import pickle
 import types
-from functools import partial 
+import unittest
+
 
 from pickablelambda import pickable
+
 
 def dummy_func(x):
     return x+1
 
+
 def dummy_func2(x, y):
-    return x+y    
+    return x+y
+
 
 class TestLambdaProxy(unittest.TestCase):
 
     def test_pickle_lambda_raises_ex(self):
         lmb = lambda x: x+1
         with self.assertRaises(Exception):
-            pickle_bin = pickle.dumps(lmb)
+            pickle.dumps(lmb)
 
     def test_pickle_with_lamdba_proxy(self):
         lmb = lambda x: x+1
@@ -44,12 +50,13 @@ class TestLambdaProxy(unittest.TestCase):
         proxy = pickable(dummy_func)
         self.assertEqual(3, proxy(2))
 
-    def dummy_method(self, x):
-        return x+1         
+    @staticmethod
+    def dummy_method(x):
+        return x+1
 
     def test_make_class_method_pickable_not_raise_err(self):
         proxy = pickable(self.dummy_method)
-        self.assertEqual(3, proxy(2)) 
+        self.assertEqual(3, proxy(2))
 
     def test_make_partial_func_pickable_not_raise_err(self):
         partial_func = partial(dummy_func, x=2)
@@ -59,8 +66,8 @@ class TestLambdaProxy(unittest.TestCase):
     def test_make_partial_func_2args_pickable_not_raise_err(self):
         partial_func = partial(dummy_func2, y=2)
         proxy = pickable(partial_func)
-        self.assertEqual(3, proxy(1))        
-        
+        self.assertEqual(3, proxy(1))
+
 
 if __name__ == "__main__":
     unittest.main()
