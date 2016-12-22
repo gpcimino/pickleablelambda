@@ -24,13 +24,13 @@ try:
 except:
     print(".. unfortunately lambdas are not picklable :-(")
 
-print("But if you import pickablelambda and you wrap L with LambdaProxy...")
+print("But if you import pickablelambda and you wrap L with pickable...")
 
-import pickablelambda 
+from pickablelambda import pickable
 
 
 with open('lambda.pickle', 'wb') as f:
-    pickle.dump(pickablelambda.LambdaProxy(L), f)
+    pickle.dump(pickable(L), f)
 
 print("... lambdas are pickable!")
 ```

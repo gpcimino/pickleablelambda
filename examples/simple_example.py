@@ -14,7 +14,7 @@ try:
 except:
     print(".. unfortunately lambdas are not picklable :-(")
 
-print("But if import pickablelambda and you wrap L with pickable...")
+print("But if you import pickablelambda and you wrap L with pickable...")
 
 from pickablelambda import pickable
 
