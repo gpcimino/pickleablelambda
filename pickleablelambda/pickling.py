@@ -5,10 +5,10 @@ Makes lambda functions pickleable via a proxy class.
 """
 
 import copyreg
-import inspect
+#import inspect
 import pickle
 import types
-
+from types import CodeType
 
 def pickle_lambda_proxy(lambda_proxy):
     """Pickle a lambda proxy."""
@@ -41,18 +41,18 @@ class LambdaProxy():
     """Proxy for lambda that allows pickling.
     """
     def __init__(self, lambda_):
-        self._lambda_code = LambdaProxy.lambda2str(lambda_)
+        self._lambda_bytecode = LambdaProxy.lambda2bytecode(lambda_) 
         self._lambda = None
 
     def dumps(self):
         """Return pickled object as bytes."""
-        return pickle.dumps(self._lambda_code)
+        return pickle.dumps(self._lambda_bytecode)
 
     @classmethod
     def loads(cls, pickled_code):
         """Unpickle pickled code from bytes."""
         lambda_code = pickle.loads(pickled_code)
-        lambda_ = cls.str2lambda(lambda_code)
+        lambda_ = cls.bytecode2lambda(lambda_code)
         if isinstance(lambda_, types.FunctionType):
             return lambda_
         else:
@@ -61,26 +61,36 @@ class LambdaProxy():
             raise Exception(msg)
 
     @staticmethod
-    def lambda2str(lambda_):
-        """Convert lambda into a string."""
-        arguments = ",".join(inspect.signature(lambda_).parameters)
-        source_code = inspect.getsource(lambda_).split(":")[1].strip()
-        return "lambda " + arguments + ": " + source_code
+    def lambda2bytecode(lambda_):
+        """Convert lambda into a tuple containing the attribute of a Code object."""
+        co = lambda_.__code__
+        co_tuple=[co.co_argcount, co.co_kwonlyargcount,
+             co.co_nlocals, co.co_stacksize, co.co_flags,
+             co.co_code, co.co_consts, co.co_names,
+             co.co_varnames, co.co_filename,
+             lambda_.__name__,
+             co.co_firstlineno, co.co_lnotab, co.co_freevars,
+             co.co_cellvars]
+        return co_tuple
+
 
     @staticmethod
-    def str2lambda(lambda_code):
-        """Evaluate code, i.e. turn string with code into a lambda. """
-        return eval(lambda_code)  # pylint: disable=eval-used
+    def bytecode2lambda(r):
+        """Instanciate a Code object containing a lambda in a lambda object. """
+        deserialized_code_obj = CodeType(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11],r[12],r[13],r[14])
+        fake = lambda x : x
+        fake.__code__ = deserialized_code_obj        
+        return fake
 
     def __call__(self, *args):
         if self._lambda is None:
-            self._lambda = LambdaProxy.str2lambda(self._lambda_code)
+            self._lambda = LambdaProxy.bytecode2lambda(self._lambda_bytecode)
         return self._lambda(*args)
 
     def lambda_(self):
         """Return lambda proxy."""
         if self._lambda is None:
-            self._lambda = LambdaProxy.str2lambda(self._lambda_code)
+            self._lambda = LambdaProxy.bytecode2lambda(self._lambda_bytecode)
         return self._lambda
 
 

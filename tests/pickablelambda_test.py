@@ -51,11 +51,11 @@ class TestLambdaProxy(unittest.TestCase):
         self.assertEqual(3, proxy(2))
 
     @staticmethod
-    def dummy_method(x):
+    def dummy_func(x):
         return x+1
 
     def test_make_class_method_pickleable_not_raise_err(self):
-        proxy = pickleable(self.dummy_method)
+        proxy = pickleable(self.dummy_func)
         self.assertEqual(3, proxy(2))
 
     def test_make_partial_func_pickleable_not_raise_err(self):
@@ -68,7 +68,16 @@ class TestLambdaProxy(unittest.TestCase):
         proxy = pickleable(partial_func)
         self.assertEqual(3, proxy(1))
 
+    def test_with_complex_line_in_source_code(self):
+        pickled_f1, pickled_f2 = self.dummy_method(pickleable(lambda x: x+1), pickleable(lambda x, y: x+y))
+        f1 = pickle.loads(pickled_f1)
+        f2 = pickle.loads(pickled_f2)
 
+        self.assertEqual(3, f1(2))      
+        self.assertEqual(5, f2(2, 3))      
+
+    def dummy_method(self, f1, f2):
+        return pickle.dumps(f1), pickle.dumps(f2)
 
 
 
