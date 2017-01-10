@@ -22,7 +22,7 @@ def unpickle_lambda(pickled_code):
     return lambda_
 
 
-def make_lambda_pickable():
+def make_lambda_pickleable():
     """Register class `LambdaProxy` in `copyreg`"""
     copyreg.pickle(LambdaProxy, pickle_lambda_proxy)
 
@@ -32,7 +32,7 @@ def is_lambda_function(obj):
     return isinstance(obj, types.LambdaType) and obj.__name__ == "<lambda>"
 
 
-def pickable(lambda_):
+def pickleable(lambda_):
     """Make a lambda function pickleable."""
     return LambdaProxy(lambda_) if is_lambda_function(lambda_) else lambda_
 
@@ -84,4 +84,4 @@ class LambdaProxy():
         return self._lambda
 
 
-make_lambda_pickable()
+make_lambda_pickleable()

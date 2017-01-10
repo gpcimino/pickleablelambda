@@ -1,4 +1,4 @@
-Pickable Lambda
+Pickleable Lambda
 ===============
 
 Makes lambda pickleable!
@@ -11,6 +11,8 @@ Here is a simple example (see examples/simple_example.py):
 ```python
 import pickle
 
+from pickleablelambda import pickleable  
+
 print("Define L = lambda x: x+1")
 L = lambda x: x+1
 
@@ -21,18 +23,16 @@ print("L(10)=" + str(L(10)))
 print("Try to pickle lambda...")
 try:
     with open('lambda.pickle', 'wb') as f:
-        pickle.dump(L, f)    
-except:
+        pickle.dump(L, f)
+except pickle.PicklingError:
     print(".. unfortunately lambdas are not picklable :-(")
 
-print("But if you import pickablelambda and you wrap L with pickable...")
-
-from pickablelambda import pickable
+print("But if you import pickleablelambda and you wrap L with pickleable...")
 
 
 with open('lambda.pickle', 'wb') as f:
-    pickle.dump(pickable(L), f)
+    pickle.dump(pickleable(L), f)
 
-print("... lambdas are pickable!")
+print("... lambdas are pickleable!")
 ```
 

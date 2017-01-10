@@ -4,7 +4,7 @@ import setuptools
 
 
 setuptools.setup(
-    name='pickablelambda',
+    name='pickleablelambda',
     version='0.1',
 
     # This automatically detects the packages in the specified

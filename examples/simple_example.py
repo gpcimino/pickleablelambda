@@ -4,7 +4,7 @@ Simple test for pickling a lambda.
 
 import pickle
 
-from pickablelambda import pickable  # pylint: disable=import-error
+from pickleablelambda import pickleable  # pylint: disable=import-error
 
 print("Define L = lambda x: x+1")
 L = lambda x: x+1
@@ -20,10 +20,10 @@ try:
 except pickle.PicklingError:
     print(".. unfortunately lambdas are not picklable :-(")
 
-print("But if you import pickablelambda and you wrap L with pickable...")
+print("But if you import pickleablelambda and you wrap L with pickleable...")
 
 
 with open('lambda.pickle', 'wb') as f:
-    pickle.dump(pickable(L), f)
+    pickle.dump(pickleable(L), f)
 
-print("... lambdas are pickable!")
+print("... lambdas are pickleable!")
