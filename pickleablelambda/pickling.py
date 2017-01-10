@@ -4,11 +4,18 @@ Pickleable lambda.
 Makes lambda functions pickleable via a proxy class.
 """
 
-import copyreg
-#import inspect
+import sys 
 import pickle
-import types
-from types import CodeType
+
+from types import CodeType, LambdaType, FunctionType
+
+if sys.version_info[0] == 3:
+    #python 3
+    import copyreg
+else:
+    #python 2
+    import copy_reg as copyreg
+
 
 def pickle_lambda_proxy(lambda_proxy):
     """Pickle a lambda proxy."""
@@ -28,8 +35,8 @@ def make_lambda_pickleable():
 
 
 def is_lambda_function(obj):
-    """Find out of `obj` is a lambda."""
-    return isinstance(obj, types.LambdaType) and obj.__name__ == "<lambda>"
+    """Find out if `obj` is a lambda."""
+    return isinstance(obj, LambdaType) and obj.__name__ == "<lambda>"
 
 
 def pickleable(lambda_):
@@ -37,7 +44,7 @@ def pickleable(lambda_):
     return LambdaProxy(lambda_) if is_lambda_function(lambda_) else lambda_
 
 
-class LambdaProxy():
+class LambdaProxy(object):
     """Proxy for lambda that allows pickling.
     """
     def __init__(self, lambda_):
@@ -53,7 +60,7 @@ class LambdaProxy():
         """Unpickle pickled code from bytes."""
         lambda_code = pickle.loads(pickled_code)
         lambda_ = cls.bytecode2lambda(lambda_code)
-        if isinstance(lambda_, types.FunctionType):
+        if isinstance(lambda_, FunctionType):
             return lambda_
         else:
             msg = "Looking for lambda in pickled object, but found {}".format(
@@ -64,20 +71,32 @@ class LambdaProxy():
     def lambda2bytecode(lambda_):
         """Convert lambda into a tuple containing the attribute of a Code object."""
         co = lambda_.__code__
-        co_tuple=[co.co_argcount, co.co_kwonlyargcount,
-             co.co_nlocals, co.co_stacksize, co.co_flags,
-             co.co_code, co.co_consts, co.co_names,
-             co.co_varnames, co.co_filename,
-             lambda_.__name__,
-             co.co_firstlineno, co.co_lnotab, co.co_freevars,
-             co.co_cellvars]
+        if sys.version_info[0] == 3:
+            co_tuple=[co.co_argcount, co.co_kwonlyargcount,
+                co.co_nlocals, co.co_stacksize, co.co_flags,
+                co.co_code, co.co_consts, co.co_names,
+                co.co_varnames, co.co_filename,
+                lambda_.__name__,
+                co.co_firstlineno, co.co_lnotab, co.co_freevars,
+                co.co_cellvars]
+        else:
+            co_tuple=[co.co_argcount, #co.co_kwonlyargcount,
+                co.co_nlocals, co.co_stacksize, co.co_flags,
+                co.co_code, co.co_consts, co.co_names,
+                co.co_varnames, co.co_filename,
+                lambda_.__name__,
+                co.co_firstlineno, co.co_lnotab, co.co_freevars,
+                co.co_cellvars]
         return co_tuple
 
 
     @staticmethod
     def bytecode2lambda(r):
         """Instanciate a Code object containing a lambda in a lambda object. """
-        deserialized_code_obj = CodeType(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11],r[12],r[13],r[14])
+        if sys.version_info[0] == 3:
+            deserialized_code_obj = CodeType(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11],r[12],r[13], r[14])
+        else:
+            deserialized_code_obj = CodeType(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11],r[12],r[13]) 
         fake = lambda x : x
         fake.__code__ = deserialized_code_obj        
         return fake
