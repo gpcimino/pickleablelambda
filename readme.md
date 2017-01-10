@@ -1,9 +1,10 @@
 Pickable Lambda
 ===============
 
-Makes lambda pickable!
+Makes lambda pickleable!
 
-I want to thank Mike Muller from [Python Accademy](http://www.python-academy.com/) for the interesting discussion on this topic and the smart ideas proposed to solve it! 
+I want to thank Mike Müller from [Python Accademy](http://www.python-academy.com/) for the interesting discussion on
+this topic and the smart ideas proposed to solve it!
 
 Here is a simple example (see examples/simple_example.py):
 

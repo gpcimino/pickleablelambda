@@ -4,8 +4,10 @@
 *.sln
 *.orig
 *.ipynb
+*.pickle
 .vscode/
 .ipynb_checkpoints/
+.idea
 __pycache__/
 tmp/
 *egg*
