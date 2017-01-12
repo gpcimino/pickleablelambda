@@ -1,21 +1,18 @@
-# pylint: disable=missing-docstring, invalid-name
+# pylint: disable=missing-docstring, invalid-name, C0301
 
 from functools import partial
 import pickle
-import types
 import unittest
+import types
 
 
 from pickleablelambda import pickleable
 
-
 def dummy_func(x):
     return x+1
 
-
 def dummy_func2(x, y):
     return x+y
-
 
 class TestLambdaProxy(unittest.TestCase):
 
@@ -69,12 +66,20 @@ class TestLambdaProxy(unittest.TestCase):
         self.assertEqual(3, proxy(1))
 
     def test_with_complex_line_in_source_code(self):
-        pickled_f1, pickled_f2 = self.dummy_method(pickleable(lambda x: x+1), pickleable(lambda x, y: x+y))
+        pickled_f1, pickled_f2 = self.dummy_method(pickleable(lambda x: x+1), pickleable(lambda x, y: x+y)) # pylint: disable=line-too-long
         f1 = pickle.loads(pickled_f1)
         f2 = pickle.loads(pickled_f2)
 
-        self.assertEqual(3, f1(2))      
-        self.assertEqual(5, f2(2, 3))      
+        self.assertEqual(3, f1(2))
+        self.assertEqual(5, f2(2, 3))
+
+    def test_with_super_complex_line_in_source_code(self):
+        pickled_f1, pickled_f2 = self.dummy_method(pickleable(lambda size: [int(y) for y in [str(x) for x in range(size) if x%2 == 0]]), pickleable(lambda x, y: x+y)) # pylint: disable=line-too-long
+        f1 = pickle.loads(pickled_f1)
+        f2 = pickle.loads(pickled_f2)
+
+        self.assertEqual([0, 2, 4, 6, 8], f1(9))
+        self.assertEqual(5, f2(2, 3))
 
     def dummy_method(self, f1, f2):
         return pickle.dumps(f1), pickle.dumps(f2)

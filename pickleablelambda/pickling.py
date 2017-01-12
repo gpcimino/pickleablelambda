@@ -4,10 +4,10 @@ Pickleable lambda.
 Makes lambda functions pickleable via a proxy class.
 """
 
-import sys 
+import sys
 import pickle
-
-from types import CodeType, LambdaType, FunctionType
+import marshal
+from types import LambdaType, FunctionType
 
 if sys.version_info[0] == 3:
     #python 3
@@ -48,7 +48,7 @@ class LambdaProxy(object):
     """Proxy for lambda that allows pickling.
     """
     def __init__(self, lambda_):
-        self._lambda_bytecode = LambdaProxy.lambda2bytecode(lambda_) 
+        self._lambda_bytecode = LambdaProxy.lambda2bytecode(lambda_)
         self._lambda = None
 
     def dumps(self):
@@ -69,36 +69,17 @@ class LambdaProxy(object):
 
     @staticmethod
     def lambda2bytecode(lambda_):
-        """Convert lambda into a tuple containing the attribute of a Code object."""
-        co = lambda_.__code__
-        if sys.version_info[0] == 3:
-            co_tuple=[co.co_argcount, co.co_kwonlyargcount,
-                co.co_nlocals, co.co_stacksize, co.co_flags,
-                co.co_code, co.co_consts, co.co_names,
-                co.co_varnames, co.co_filename,
-                lambda_.__name__,
-                co.co_firstlineno, co.co_lnotab, co.co_freevars,
-                co.co_cellvars]
-        else:
-            co_tuple=[co.co_argcount, #co.co_kwonlyargcount,
-                co.co_nlocals, co.co_stacksize, co.co_flags,
-                co.co_code, co.co_consts, co.co_names,
-                co.co_varnames, co.co_filename,
-                lambda_.__name__,
-                co.co_firstlineno, co.co_lnotab, co.co_freevars,
-                co.co_cellvars]
-        return co_tuple
+        """Serialize lambda's Code attribute."""
+        serialized_code = marshal.dumps(lambda_.__code__)
+        return serialized_code
 
 
     @staticmethod
-    def bytecode2lambda(r):
-        """Instanciate a Code object containing a lambda in a lambda object. """
-        if sys.version_info[0] == 3:
-            deserialized_code_obj = CodeType(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11],r[12],r[13], r[14])
-        else:
-            deserialized_code_obj = CodeType(r[0],r[1],r[2],r[3],r[4],r[5],r[6],r[7],r[8],r[9],r[10],r[11],r[12],r[13]) 
-        fake = lambda x : x
-        fake.__code__ = deserialized_code_obj        
+    def bytecode2lambda(serialized_code):
+        """Instanciate a lambda from serialized lambda Code."""
+        deserialized_code_obj = marshal.loads(serialized_code)
+        fake = lambda x: x
+        fake.__code__ = deserialized_code_obj
         return fake
 
     def __call__(self, *args):
