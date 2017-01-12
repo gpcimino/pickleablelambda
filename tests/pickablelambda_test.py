@@ -81,7 +81,13 @@ class TestLambdaProxy(unittest.TestCase):
         self.assertEqual([0, 2, 4, 6, 8], f1(9))
         self.assertEqual(5, f2(2, 3))
 
-    def dummy_method(self, f1, f2):
+    def test_with_nested_lambdas(self):
+        #wired nested lambda calculus
+        pickled_f1, _ = self.dummy_method(pickleable(lambda F, m: lambda x: F(x)*m))
+        f1 = pickle.loads(pickled_f1)
+        self.assertEqual(12, f1(lambda x: x**2, 3)(2))
+
+    def dummy_method(self, f1, f2=""):
         return pickle.dumps(f1), pickle.dumps(f2)
 
 

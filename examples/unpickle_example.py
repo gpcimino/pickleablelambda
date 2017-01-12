@@ -4,7 +4,7 @@ Simple test for unpickling from a file.
 
 import pickle
 
-from pickleablelambda import is_lambda_function  # pylint: disable=import-error
+from pickleablelambda import is_lambda_function # pylint: disable=import-error
 
 
 with open('lambda.pickle', 'rb') as f:
