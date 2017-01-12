@@ -36,3 +36,6 @@ with open('lambda.pickle', 'wb') as f:
 print("... lambdas are pickleable!")
 ```
 
+
+Tested on Python 3.5 and 2.7.
+
