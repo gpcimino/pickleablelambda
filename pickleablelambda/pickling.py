@@ -49,7 +49,7 @@ class LambdaProxy(object):
     """
     def __init__(self, lambda_):
         self._lambda_bytecode = LambdaProxy.lambda2bytecode(lambda_)
-        self._lambda = None
+        self._lambda = lambda_
 
     def dumps(self):
         """Return pickled object as bytes."""

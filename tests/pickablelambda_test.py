@@ -8,11 +8,12 @@ import types
 
 from pickleablelambda import pickleable
 
-def dummy_func(x):
+def mysum(x, y):
+    return x+y
+
+def incr(x):
     return x+1
 
-def dummy_func2(x, y):
-    return x+y
 
 class TestLambdaProxy(unittest.TestCase):
 
@@ -44,7 +45,7 @@ class TestLambdaProxy(unittest.TestCase):
         self.assertEqual(lmb(2), proxy(2))
 
     def test_make_func_pickleable_not_raise_err(self):
-        proxy = pickleable(dummy_func)
+        proxy = pickleable(incr)
         self.assertEqual(3, proxy(2))
 
     @staticmethod
@@ -56,12 +57,12 @@ class TestLambdaProxy(unittest.TestCase):
         self.assertEqual(3, proxy(2))
 
     def test_make_partial_func_pickleable_not_raise_err(self):
-        partial_func = partial(dummy_func, x=2)
+        partial_func = partial(incr, x=2)
         proxy = pickleable(partial_func)
         self.assertEqual(3, proxy())
 
     def test_make_partial_func_2args_pickleable_not_raise_err(self):
-        partial_func = partial(dummy_func2, y=2)
+        partial_func = partial(mysum, y=2)
         proxy = pickleable(partial_func)
         self.assertEqual(3, proxy(1))
 
@@ -89,6 +90,14 @@ class TestLambdaProxy(unittest.TestCase):
 
     def dummy_method(self, f1, f2=""):
         return pickle.dumps(f1), pickle.dumps(f2)
+
+    #@unittest.skip
+    def test_use_func_in_lambda(self):
+        print(incr(10))
+        pickled_f1, _ = self.dummy_method(pickleable(lambda y: incr(y)))
+        f1 = pickle.loads(pickled_f1)
+        self.assertEqual(3, f1(2))
+
 
 
 
