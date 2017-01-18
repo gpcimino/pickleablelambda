@@ -26,4 +26,10 @@ setuptools.setup(
     # licenses: https://opensource.org/licenses/alphabetical
     license='MIT',
 
-    test_suite = 'tests')
+    test_suite = 'tests',
+
+    install_requires=[
+        'dill'
+    ]
+    
+    )

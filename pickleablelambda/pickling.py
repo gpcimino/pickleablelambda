@@ -5,8 +5,8 @@ Makes lambda functions pickleable via a proxy class.
 """
 
 import sys
+import dill
 import pickle
-import marshal
 from types import LambdaType, FunctionType
 
 if sys.version_info[0] == 3:
@@ -70,17 +70,19 @@ class LambdaProxy(object):
     @staticmethod
     def lambda2bytecode(lambda_):
         """Serialize lambda's Code attribute."""
-        serialized_code = marshal.dumps(lambda_.__code__)
+        #serialized_code = marshal.dumps(lambda_.__code__)
+        serialized_code = dill.dumps(lambda_)
         return serialized_code
 
 
     @staticmethod
     def bytecode2lambda(serialized_code):
         """Instanciate a lambda from serialized lambda Code."""
-        deserialized_code_obj = marshal.loads(serialized_code)
-        fake = lambda x: x
-        fake.__code__ = deserialized_code_obj
-        return fake
+        # deserialized_code_obj = marshal.loads(serialized_code)
+        # fake = lambda x: x
+        # fake.__code__ = deserialized_code_obj
+        # return fake
+        return dill.loads(serialized_code)
 
     def __call__(self, *args):
         if self._lambda is None:
